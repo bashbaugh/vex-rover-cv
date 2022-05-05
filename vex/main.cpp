@@ -4,12 +4,14 @@
 // using namespace vex;
 
 //#region config_globals
-vex::brain brain();
-vex::controller controller();
-vex::motor motor_tl(vex::PORT1, vex::gearSetting::ratio18_1, false);
-vex::motor motor_tr(vex::PORT2, vex::gearSetting::ratio18_1, false);
-vex::motor motor_bl(vex::PORT3, vex::gearSetting::ratio18_1, false);
-vex::motor motor_br(vex::PORT4, vex::gearSetting::ratio18_1, false);
+vex::brain Brain;
+vex::motor motor_fl(vex::PORT1, vex::gearSetting::ratio18_1, false);
+vex::motor motor_fr(vex::PORT2, vex::gearSetting::ratio18_1, false);
+vex::motor motor_rl(vex::PORT3, vex::gearSetting::ratio18_1, false);
+vex::motor motor_rr(vex::PORT4, vex::gearSetting::ratio18_1, false);
+vex::motor motor_claw(vex::PORT11, vex::gearSetting::ratio18_1, false);
+vex::motor motor_pitch(vex::PORT19, vex::gearSetting::ratio18_1, false);
+vex::motor motor_extend(vex::PORT20, vex::gearSetting::ratio18_1, false);
 //#endregion config_globals
 
 const int SPEEDPCT = 80;
@@ -25,24 +27,22 @@ const int SPEEDPCT = 80;
 class Rover {
   public:
   void step(bool reverse = false) {
-    int rot = reverse ? -1 : 1
-    motor_tl.spinTo(rot, vex::rotationUnits::rev, SPEEDPCT, vex::velocityUnits::pct, true);
-    motor_tr.spinTo(rot, vex::rotationUnits::rev, SPEEDPCT, vex::velocityUnits::pct, true);
-    motor_bl.spinTo(rot, vex::rotationUnits::rev, SPEEDPCT, vex::velocityUnits::pct, true);
-    motor_br.spinTo(rot, vex::rotationUnits::rev, SPEEDPCT, vex::velocityUnits::pct, true);
+    int rot = reverse ? -1 : 1;
+    motor_fl.spinTo(rot, vex::rotationUnits::rev, SPEEDPCT, vex::velocityUnits::pct, true);
+    motor_fr.spinTo(rot, vex::rotationUnits::rev, SPEEDPCT, vex::velocityUnits::pct, true);
+    motor_rl.spinTo(rot, vex::rotationUnits::rev, SPEEDPCT, vex::velocityUnits::pct, true);
+    motor_rr.spinTo(rot, vex::rotationUnits::rev, SPEEDPCT, vex::velocityUnits::pct, true);
   }
   
   void loop () {
     while (true) {
-      step_forward();
+      if (controller.ButtonUp.pressing()) this->step(false);
+      if (controller.ButtonDown.pressing()) this->step(true);
     }
+  }
+};
 
-    if (controller.ButtonUp.pressing()) this->step(false)
-    if (controller.ButtonDown.pressing()) this->step(true)
-  } 
-}
-
-Rover rover();
+Rover rover;
 
 int main(void) {
   rover.loop();
